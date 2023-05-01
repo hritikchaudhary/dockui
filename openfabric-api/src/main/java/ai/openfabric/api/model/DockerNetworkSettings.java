@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.Map;
+import java.util.List;
 
 @Entity
 public class DockerNetworkSettings {
@@ -14,10 +14,12 @@ public class DockerNetworkSettings {
     private Long id;
     @Getter
     @Setter
-    @ElementCollection
-    private Map<String, DockerNetwork> networks;
+    @OneToMany(mappedBy = "dockerNetworkSettings", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DockerNetwork> networks;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "worker_id")
+    @Getter
+    @Setter
     private Worker worker;
 }

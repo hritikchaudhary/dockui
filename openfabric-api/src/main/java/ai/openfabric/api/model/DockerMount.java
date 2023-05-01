@@ -46,5 +46,7 @@ public class DockerMount {
 
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name = "worker_id")
+        @Getter
+        @Setter
         private Worker worker;
 }

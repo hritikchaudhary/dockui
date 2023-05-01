@@ -8,7 +8,6 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
 @Entity()
 @Table(name = "worker")
@@ -46,17 +45,16 @@ public class Worker extends Datable implements Serializable {
     @Column(name = "image_id")
     private String imageId;
 
+    @Getter
+    @Setter
+    @Column(name = "container_id")
+    private String containerId;
+
 
     @Getter
     @Setter
-    @OneToMany(mappedBy = "dockerContainer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL)
     private List<DockerPort> ports;
-
-    @Getter
-    @Setter
-    @ElementCollection
-    @Column(name = "labels")
-    private Map<String, String> labels;
 
     @Getter
     @Setter
@@ -90,7 +88,7 @@ public class Worker extends Datable implements Serializable {
 
     @Getter
     @Setter
-    @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL)
     private List<DockerMount> mounts;
 
 }

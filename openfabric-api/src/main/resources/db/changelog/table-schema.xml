@@ -49,6 +49,7 @@
             <column name="created" type="bigint"/>
             <column name="image" type="varchar(255)"/>
             <column name="image_id" type="varchar(255)"/>
+            <column name="container_id" type="varchar(255)"/>
             <column name="status" type="varchar(255)"/>
             <column name="state" type="varchar(255)"/>
             <column name="size_rw" type="bigint"/>
@@ -60,9 +61,8 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="network_mode" type="VARCHAR(255)">
-                <constraints nullable="false"/>
             </column>
-            <column name="worker_id" type="BIGINT">
+            <column name="worker_id" type="${uuid_type}">
                 <constraints nullable="false"/>
             </column>
         </createTable>
@@ -71,9 +71,7 @@
                 baseTableName="docker_host_config"
                 constraintName="fk_docker_host_config_worker_id"
                 referencedColumnNames="id"
-                referencedTableName="worker"
-                onDelete="CASCADE"
-                onUpdate="CASCADE"/>
+                referencedTableName="worker"/>
 
         <createTable tableName="docker_mount">
             <column name="id" type="bigint" autoIncrement="true">
@@ -87,7 +85,7 @@
             <column name="mode" type="varchar(255)"/>
             <column name="rw" type="boolean"/>
             <column name="propagation" type="varchar(255)"/>
-            <column name="worker_id" type="bigint">
+            <column name="worker_id" type="${uuid_type}">
                 <constraints nullable="false"/>
             </column>
         </createTable>
@@ -96,9 +94,20 @@
                 baseTableName="docker_mount"
                 constraintName="fk_docker_mount_worker_id"
                 referencedColumnNames="id"
-                referencedTableName="worker"
-                onDelete="CASCADE"
-                onUpdate="CASCADE"/>
+                referencedTableName="worker"/>
+        <createTable tableName="docker_network_settings">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="worker_id" type="${uuid_type}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="docker_network_settings"
+                                 baseColumnNames="worker_id"
+                                 constraintName="fk_docker_network_settings_worker_id"
+                                 referencedTableName="worker"
+                                 referencedColumnNames="id"/>
         <createTable tableName="docker_network">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
@@ -106,7 +115,9 @@
             <column name="ipam_config" type="varchar(255)"/>
             <column name="links" type="varchar(255)"/>
             <column name="aliases" type="varchar(255)"/>
-            <column name="network_id" type="varchar(255)"/>
+            <column name="network_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
             <column name="endpoint_id" type="varchar(255)"/>
             <column name="gateway" type="varchar(255)"/>
             <column name="ip_address" type="varchar(255)"/>
@@ -116,33 +127,12 @@
             <column name="global_ipv6_prefix_len" type="integer"/>
             <column name="mac_address" type="varchar(255)"/>
             <column name="driver_opts" type="varchar(255)"/>
-            <column name="worker_id" type="bigint">
-                <constraints nullable="false"/>
-            </column>
         </createTable>
         <addForeignKeyConstraint baseTableName="docker_network"
-                                 baseColumnNames="worker_id"
-                                 constraintName="fk_docker_network_worker_id"
-                                 referencedTableName="worker"
-                                 referencedColumnNames="id"
-                                 onDelete="CASCADE"
-                                 onUpdate="CASCADE"/>
-        <createTable tableName="docker_network_settings">
-            <column name="id" type="BIGINT" autoIncrement="true">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="networks" type="JSON"/>
-            <column name="worker_id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-        <addForeignKeyConstraint baseTableName="docker_network_settings"
-                                 baseColumnNames="worker_id"
-                                 constraintName="fk_docker_network_settings_worker_id"
-                                 referencedTableName="worker"
-                                 referencedColumnNames="id"
-                                 onDelete="CASCADE"
-                                 onUpdate="CASCADE"/>
+                                 baseColumnNames="network_id"
+                                 constraintName="fk_docker_network_settings_id"
+                                 referencedTableName="docker_network_settings"
+                                 referencedColumnNames="id"/>
         <createTable tableName="docker_port">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true" nullable="false"/>
@@ -151,7 +141,7 @@
             <column name="private_port" type="INT"/>
             <column name="public_port" type="INT"/>
             <column name="type" type="VARCHAR(255)"/>
-            <column name="worker_id" type="BIGINT">
+            <column name="worker_id" type="${uuid_type}">
                 <constraints nullable="false"/>
             </column>
         </createTable>
@@ -159,9 +149,8 @@
                                  baseColumnNames="worker_id"
                                  constraintName="fk_docker_port_worker_id"
                                  referencedTableName="worker"
-                                 referencedColumnNames="id"
-                                 onDelete="CASCADE"
-                                 onUpdate="CASCADE"/>
+                                 referencedColumnNames="id"/>
+        <addUniqueConstraint constraintName="uk_image_id" columnNames="image_id" tableName="worker"/>
 
     </changeSet>
 

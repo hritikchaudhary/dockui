@@ -5,7 +5,6 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.Map;
 
 @Entity
 public class DockerNetwork {
@@ -28,9 +27,6 @@ public class DockerNetwork {
     @ElementCollection
     private List<String> aliases;
 
-    @Getter
-    @Setter
-    private String networkId;
 
     @Getter
     @Setter
@@ -64,12 +60,9 @@ public class DockerNetwork {
     @Setter
     private String macAddress;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "network_id")
     @Getter
     @Setter
-    @ElementCollection
-    private Map<String, String> driverOpts;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "worker_id")
-    private Worker worker;
+    private DockerNetworkSettings dockerNetworkSettings;
 }

@@ -7,6 +7,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -35,8 +36,18 @@ public class Worker extends Datable implements Serializable {
 
     @Getter
     @Setter
-    @Column(name = "created")
-    private long created;
+    @Column(name = "created_at")
+    private Timestamp createdAt;
+
+    @Getter
+    @Setter
+    @Column(name = "updated_at")
+    private Timestamp updatedAt;
+
+    @Getter
+    @Setter
+    @Column(name = "deleted_at")
+    private Timestamp deletedAt;
 
     @Getter
     @Setter
@@ -55,7 +66,7 @@ public class Worker extends Datable implements Serializable {
 
 
     @Getter
-    @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<DockerPort> ports = new ArrayList<>();
 
     public void setPorts(List<DockerPort> ports) {

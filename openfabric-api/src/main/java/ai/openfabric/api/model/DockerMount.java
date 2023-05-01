@@ -16,10 +16,6 @@ public class DockerMount {
 
         @Getter
         @Setter
-        private String type;
-
-        @Getter
-        @Setter
         private String name;
 
         @Getter

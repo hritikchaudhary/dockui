@@ -5,7 +5,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class DockerNetwork {
@@ -14,22 +17,23 @@ public class DockerNetwork {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Getter
-    @Setter
-    @Column(name = "ipam_config")
-    private String ipamConfig;
-
-    @Getter
-    @Setter
-    @ElementCollection
-    @Column(name = "links")
-    private List<String> links;
-
-    @Getter
-    @Setter
-    @ElementCollection
     @Column(name = "aliases")
-    private List<String> aliases;
+    private String aliasesAsString;
+
+    public List<String> getAliases() {
+        if (aliasesAsString == null) {
+            return Collections.emptyList();
+        }
+        return Arrays.asList(aliasesAsString.split(","));
+    }
+
+    public void setAliases(List<String> aliases) {
+        if (aliases == null) {
+            this.aliasesAsString = null;
+        } else {
+            this.aliasesAsString = String.join(",", aliases);
+        }
+    }
 
 
     @Getter
@@ -78,4 +82,19 @@ public class DockerNetwork {
     @Setter
     @JsonIgnore
     private DockerNetworkSettings dockerNetworkSettings;
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DockerNetwork)) return false;
+        DockerNetwork that = (DockerNetwork) o;
+        return Objects.equals(endpointId, that.endpointId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(endpointId);
+    }
+
 }

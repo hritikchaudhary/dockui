@@ -47,7 +47,6 @@
         <validCheckSum>ANY</validCheckSum>
         <addColumn tableName="worker">
             <column name="command" type="varchar(255)"/>
-            <column name="created" type="bigint"/>
             <column name="image" type="varchar(255)"/>
             <column name="image_id" type="varchar(255)"/>
             <column name="container_id" type="varchar(255)"/>
@@ -55,7 +54,6 @@
             <column name="state" type="varchar(255)"/>
             <column name="size_rw" type="bigint"/>
             <column name="size_root_fs" type="bigint"/>
-            <column name="labels" type="jsonb"/>
         </addColumn>
         <createTable tableName="docker_host_config">
             <column name="id" type="BIGINT" autoIncrement="true">
@@ -78,7 +76,6 @@
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="type" type="varchar(255)"/>
             <column name="name" type="varchar(255)"/>
             <column name="source" type="varchar(255)"/>
             <column name="destination" type="varchar(255)"/>
@@ -113,8 +110,6 @@
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="ipam_config" type="varchar(255)"/>
-            <column name="links" type="varchar(255)"/>
             <column name="aliases" type="varchar(255)"/>
             <column name="network_id" type="BIGINT">
                 <constraints nullable="false"/>

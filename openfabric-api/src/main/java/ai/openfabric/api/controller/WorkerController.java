@@ -16,6 +16,7 @@ public class WorkerController {
     public WorkerController(WorkerService workerService) {
         // initialize DockerClient and other resources
         this.workerService = workerService;
+        this.workerService.syncWorkersFromDocker();
     }
 
 

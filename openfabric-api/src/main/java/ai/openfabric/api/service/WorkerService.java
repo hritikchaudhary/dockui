@@ -3,8 +3,10 @@ package ai.openfabric.api.service;
 import ai.openfabric.api.model.*;
 import ai.openfabric.api.repository.*;
 import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.api.model.Container;
 import com.github.dockerjava.api.model.ContainerMount;
+import com.github.dockerjava.api.model.ContainerNetwork;
 import com.github.dockerjava.api.model.ContainerPort;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientConfig;
@@ -13,7 +15,10 @@ import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
 import com.github.dockerjava.transport.DockerHttpClient;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -61,44 +66,76 @@ public class WorkerService {
                 worker = new Worker();
                 worker.setImageId(container.getImageId());
             }
+            worker.setContainerId(container.getId());
             worker.setName(container.getNames()[0].substring(1)); // remove the leading '/' from the container name
             worker.setCommand(container.getCommand());
-            worker.setCreated(container.getCreated());
             worker.setImage(container.getImage());
             worker.setImageId(container.getImageId());
-            List<DockerPort> dockerPorts = this.dockerPortRepository.findByWorkerId(worker.getId());
-            for (ContainerPort exposedPort : container.getPorts()) {
-                DockerPort dockerPort = new DockerPort();
-                dockerPort.setPrivatePort(exposedPort.getPrivatePort());
-                dockerPort.setWorker(worker);
-                dockerPorts.add(dockerPort);
-            }
-            worker.setPorts(dockerPorts);
             worker.setStatus(container.getStatus());
             worker.setState(container.getState());
             worker.setSizeRw(container.getSizeRw());
             worker.setSizeRootFs(container.getSizeRootFs());
+            InspectContainerResponse containerInfo = dockerClient.inspectContainerCmd(container.getId()).exec();
+            Timestamp createdDate = Timestamp.from(Instant.parse(containerInfo.getCreated()));
+            Timestamp updatedDate = Timestamp.from(Instant.parse(containerInfo.getState().getStartedAt()));
+            Timestamp deletedDate = Timestamp.from(Instant.parse(containerInfo.getState().getFinishedAt()));
+            worker.setCreatedAt(createdDate);
+            worker.setUpdatedAt(updatedDate);
+            worker.setDeletedAt(deletedDate);
 
+            List<DockerPort> dockerPorts = this.dockerPortRepository.findByWorkerId(worker.getId());
+            for (ContainerPort containerPort : container.getPorts()) {
+                DockerPort dockerPort = new DockerPort();
+                dockerPort.setIp(containerPort.getIp());
+                dockerPort.setPrivatePort(containerPort.getPrivatePort());
+                dockerPort.setPublicPort(containerPort.getPublicPort());
+                dockerPort.setType(containerPort.getType());
+                dockerPort.setWorker(worker);
+                dockerPorts.add(dockerPort);
+            }
+            worker.setPorts(dockerPorts);
             DockerHostConfig hostConfig = dockerHostConfigRepository.findByWorkerId(worker.getId());
             if (hostConfig == null) {
                 hostConfig = new DockerHostConfig();
                 hostConfig.setWorker(worker);
             }
+            hostConfig.setNetworkMode(container.getHostConfig().getNetworkMode());
             worker.setHostConfig(hostConfig);
             DockerNetworkSettings dockerNetworkSettings = dockerNetworkSettingsRepository.findByWorkerId(worker.getId());
             if(dockerNetworkSettings==null){
                 dockerNetworkSettings = new DockerNetworkSettings();
                 dockerNetworkSettings.setWorker((worker));
             }
+            List<DockerNetwork> dockerNetworks = new ArrayList<>();
+            for(ContainerNetwork containerNetwork : container.getNetworkSettings().getNetworks().values()){
+                DockerNetwork dockerNetwork = new DockerNetwork();
+                dockerNetwork.setDockerNetworkSettings(dockerNetworkSettings);
+                dockerNetwork.setAliases(containerNetwork.getAliases());
+                dockerNetwork.setGateway(containerNetwork.getGateway());
+                dockerNetwork.setEndpointId(containerNetwork.getEndpointId());
+                dockerNetwork.setIpAddress(containerNetwork.getIpAddress());
+                dockerNetwork.setGlobalIpv6Address(containerNetwork.getGlobalIPv6Address());
+                dockerNetwork.setGlobalIpv6PrefixLen(containerNetwork.getGlobalIPv6PrefixLen());
+                dockerNetwork.setIpPrefixLen(containerNetwork.getIpPrefixLen());
+                dockerNetwork.setIpv6Gateway(containerNetwork.getIpV6Gateway());
+                dockerNetwork.setMacAddress(containerNetwork.getMacAddress());
+                dockerNetworks.add(dockerNetwork);
+            }
+            dockerNetworkSettings.setNetworks(dockerNetworks);
             worker.setNetworkSettings(dockerNetworkSettings);
-
             List<DockerMount> dockerMounts = dockerMountRepository.findByWorkerId(worker.getId());
             worker.setMounts(dockerMounts);
             for (ContainerMount containerMount : container.getMounts()) {
                 DockerMount dockerMount = new DockerMount();
                 dockerMount.setWorker(worker);
-                dockerMount.setName(containerMount.getName());
                 dockerMount.setRw(containerMount.getRw());
+                dockerMount.setName(containerMount.getName());
+                dockerMount.setMode(containerMount.getMode());
+                dockerMount.setDriver(containerMount.getDriver());
+                dockerMount.setDestination(containerMount.getDestination());
+                dockerMount.setSource(containerMount.getSource());
+                dockerMount.setMode(containerMount.getMode());
+                dockerMount.setPropagation(containerMount.getPropagation());
                 dockerMounts.add(dockerMount);
             }
             worker.setMounts(dockerMounts);

@@ -23,18 +23,22 @@ public class Worker extends Datable implements Serializable {
 
     @Getter
     @Setter
+    @Column(name = "name")
     public String name;
 
     @Getter
     @Setter
+    @Column(name = "command")
     private String command;
 
     @Getter
     @Setter
+    @Column(name = "created")
     private long created;
 
     @Getter
     @Setter
+    @Column(name = "image")
     private String image;
 
     @Getter
@@ -51,14 +55,17 @@ public class Worker extends Datable implements Serializable {
     @Getter
     @Setter
     @ElementCollection
+    @Column(name = "labels")
     private Map<String, String> labels;
 
     @Getter
     @Setter
+    @Column(name = "status")
     private String status;
 
     @Getter
     @Setter
+    @Column(name = "state")
     private String state;
 
     @Getter
@@ -73,12 +80,12 @@ public class Worker extends Datable implements Serializable {
 
     @Getter
     @Setter
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "worker", cascade = CascadeType.ALL)
     private DockerHostConfig hostConfig;
 
     @Getter
     @Setter
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "worker", cascade = CascadeType.ALL)
     private DockerNetworkSettings networkSettings;
 
     @Getter

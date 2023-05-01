@@ -7,7 +7,10 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity()
 @Table(name = "worker")
@@ -52,9 +55,28 @@ public class Worker extends Datable implements Serializable {
 
 
     @Getter
-    @Setter
     @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL)
-    private List<DockerPort> ports;
+    private List<DockerPort> ports = new ArrayList<>();
+
+    public void setPorts(List<DockerPort> ports) {
+        if (this.ports == null) {
+            this.ports = new ArrayList<>();
+        }
+        for (DockerPort port : ports) {
+            boolean portExists = false;
+            for (DockerPort existingPort : this.ports) {
+                if (existingPort.getPrivatePort() == port.getPrivatePort()) {
+                    portExists = true;
+                    break;
+                }
+            }
+            if (!portExists) {
+                port.setWorker(this);
+                this.ports.add(port);
+            }
+        }
+    }
+
 
     @Getter
     @Setter
@@ -87,8 +109,21 @@ public class Worker extends Datable implements Serializable {
     private DockerNetworkSettings networkSettings;
 
     @Getter
-    @Setter
     @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL)
-    private List<DockerMount> mounts;
+    private List<DockerMount> mounts = new ArrayList<>();
+
+    public void setMounts(List<DockerMount> mounts) {
+        if (mounts == null) {
+            this.mounts = new ArrayList<>();
+            return;
+        }
+
+        Set<DockerMount> mountSet = new HashSet<>(mounts);
+        this.mounts = new ArrayList<>(mountSet);
+
+        for (DockerMount mount : this.mounts) {
+            mount.setWorker(this);
+        }
+    }
 
 }

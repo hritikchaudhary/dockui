@@ -1,9 +1,11 @@
 package ai.openfabric.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class DockerMount {
@@ -48,5 +50,20 @@ public class DockerMount {
         @JoinColumn(name = "worker_id")
         @Getter
         @Setter
+        @JsonIgnore
         private Worker worker;
+
+
+        @Override
+        public boolean equals(Object o) {
+                if (this == o) return true;
+                if (o == null || getClass() != o.getClass()) return false;
+                DockerMount that = (DockerMount) o;
+                return Objects.equals(name, that.name);
+        }
+
+        @Override
+        public int hashCode() {
+                return Objects.hash(name);
+        }
 }

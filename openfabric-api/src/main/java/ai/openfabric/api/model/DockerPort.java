@@ -1,9 +1,11 @@
 package ai.openfabric.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class DockerPort {
@@ -32,5 +34,19 @@ public class DockerPort {
     @JoinColumn(name = "worker_id")
     @Getter
     @Setter
+    @JsonIgnore
     private Worker worker;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DockerPort)) return false;
+        DockerPort that = (DockerPort) o;
+        return privatePort == that.privatePort;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(privatePort);
+    }
 }

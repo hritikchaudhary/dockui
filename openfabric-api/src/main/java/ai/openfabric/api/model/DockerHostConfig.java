@@ -1,5 +1,6 @@
 package ai.openfabric.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,5 +21,6 @@ public class DockerHostConfig {
     @JoinColumn(name = "worker_id")
     @Getter
     @Setter
+    @JsonIgnore
     private Worker worker;
 }

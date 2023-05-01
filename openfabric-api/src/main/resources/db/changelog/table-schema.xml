@@ -44,6 +44,7 @@
         </createTable>
     </changeSet>
     <changeSet id="WO_02" author="hritik chaudhary">
+        <validCheckSum>ANY</validCheckSum>
         <addColumn tableName="worker">
             <column name="command" type="varchar(255)"/>
             <column name="created" type="bigint"/>
@@ -126,7 +127,6 @@
             <column name="global_ipv6_address" type="varchar(255)"/>
             <column name="global_ipv6_prefix_len" type="integer"/>
             <column name="mac_address" type="varchar(255)"/>
-            <column name="driver_opts" type="varchar(255)"/>
         </createTable>
         <addForeignKeyConstraint baseTableName="docker_network"
                                  baseColumnNames="network_id"
@@ -150,7 +150,9 @@
                                  constraintName="fk_docker_port_worker_id"
                                  referencedTableName="worker"
                                  referencedColumnNames="id"/>
-        <addUniqueConstraint constraintName="uk_image_id" columnNames="image_id" tableName="worker"/>
+        <addUniqueConstraint constraintName="uk_image_id_worker" columnNames="image_id" tableName="worker"/>
+        <addUniqueConstraint constraintName="uk_worker_id_docker_network_settings" columnNames="worker_id" tableName="docker_network_settings"/>
+        <addUniqueConstraint constraintName="uk_worker_id_docker_host_config" columnNames="worker_id" tableName="docker_host_config"/>
 
     </changeSet>
 

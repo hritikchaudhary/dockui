@@ -1,18 +1,23 @@
 package ai.openfabric.api.service;
 
+import ai.openfabric.api.dto.WorkerListDTO;
 import ai.openfabric.api.model.*;
 import ai.openfabric.api.repository.*;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.InspectContainerResponse;
-import com.github.dockerjava.api.model.Container;
-import com.github.dockerjava.api.model.ContainerMount;
-import com.github.dockerjava.api.model.ContainerNetwork;
-import com.github.dockerjava.api.model.ContainerPort;
+import com.github.dockerjava.api.exception.DockerException;
+import com.github.dockerjava.api.model.*;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientConfig;
 import com.github.dockerjava.core.DockerClientImpl;
+import com.github.dockerjava.core.InvocationBuilder;
 import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
 import com.github.dockerjava.transport.DockerHttpClient;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -102,12 +107,12 @@ public class WorkerService {
             hostConfig.setNetworkMode(container.getHostConfig().getNetworkMode());
             worker.setHostConfig(hostConfig);
             DockerNetworkSettings dockerNetworkSettings = dockerNetworkSettingsRepository.findByWorkerId(worker.getId());
-            if(dockerNetworkSettings==null){
+            if (dockerNetworkSettings == null) {
                 dockerNetworkSettings = new DockerNetworkSettings();
                 dockerNetworkSettings.setWorker((worker));
             }
             List<DockerNetwork> dockerNetworks = new ArrayList<>();
-            for(ContainerNetwork containerNetwork : container.getNetworkSettings().getNetworks().values()){
+            for (ContainerNetwork containerNetwork : container.getNetworkSettings().getNetworks().values()) {
                 DockerNetwork dockerNetwork = new DockerNetwork();
                 dockerNetwork.setDockerNetworkSettings(dockerNetworkSettings);
                 dockerNetwork.setAliases(containerNetwork.getAliases());
@@ -144,10 +149,52 @@ public class WorkerService {
         return "Synced successfully!";
     }
 
-    public List<Container> getContainers(){
-        return dockerClient.listContainersCmd().withShowAll(true).exec();
+    public Page<WorkerListDTO> getWorkersFromDb(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return workerRepository.listAllWorkers(pageable);
     }
-    public List<Worker> getWorkersFromDb(){
-        return workerRepository.findAll();
+
+    public ResponseEntity<String> startContainer(String containerId) {
+        try {
+            if (dockerClient.inspectContainerCmd(containerId).exec().getState().getStatus().equals("running")) {
+                return ResponseEntity.ok("Container is already running!");
+            }
+            dockerClient.startContainerCmd(containerId).exec();
+            return ResponseEntity.ok("Container started successfully!");
+        } catch (DockerException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to start container: " + e.getMessage());
+        }
+
+    }
+
+    public ResponseEntity<String> stopContainer(String containerId) {
+        try {
+            if (dockerClient.inspectContainerCmd(containerId).exec().getState().getStatus().equals("exited")) {
+                return ResponseEntity.ok("Container is already stopped!");
+            }
+            dockerClient.stopContainerCmd(containerId).exec();
+            return ResponseEntity.ok("Container stopped successfully!");
+        } catch (DockerException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to stop container: " + e.getMessage());
+        }
+    }
+
+    public Worker getWorkerInformation(String containerId){
+        return workerRepository.findByContainerId(containerId);
+    }
+
+    public Statistics getContainerStatistics(String containerId) throws Exception {
+        InvocationBuilder.AsyncResultCallback<Statistics> callback = new InvocationBuilder.AsyncResultCallback<>();
+        dockerClient.statsCmd(containerId).exec(callback);
+        Statistics stats;
+        try {
+            stats = callback.awaitResult();
+            callback.close();
+            return stats;
+        } catch (Exception e) {
+            throw new Exception("Failed to get container statistics: " + e.getMessage());
+        }
     }
 }

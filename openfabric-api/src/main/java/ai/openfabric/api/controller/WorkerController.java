@@ -28,34 +28,34 @@ public class WorkerController {
     }
 
 
-    @GetMapping(path = "/workers")
+    @GetMapping(path = "/list")
     public ResponseEntity<Page<WorkerListDTO>> getWorkersFromDb(@RequestParam(defaultValue = "0") int page,
                                                                 @RequestParam(defaultValue = "10") int size) {
         Page<WorkerListDTO> workerPage = workerService.getWorkersFromDb(page, size);
         return new ResponseEntity<>(workerPage, HttpStatus.OK);
     }
 
-    @GetMapping(path = "/workers/syncWithDocker")
+    @GetMapping(path = "/syncWithDocker")
     public String syncWorkersFromDocker() {
         return this.workerService.syncWorkersFromDocker();
     }
 
-    @PostMapping("/workers/start/{containerId}")
+    @PostMapping("/start/{containerId}")
     public ResponseEntity<String> startContainer(@PathVariable String containerId) {
         return this.workerService.startContainer(containerId);
     }
 
-    @PostMapping("/workers/stop/{containerId}")
+    @PostMapping("/stop/{containerId}")
     public ResponseEntity<String> stopContainer(@PathVariable String containerId) {
         return this.workerService.stopContainer(containerId);
     }
 
-    @GetMapping(path = "/workers/info/{containerId}")
+    @GetMapping(path = "/info/{containerId}")
     public Worker getWorkerInformation(@PathVariable String containerId) {
         return this.workerService.getWorkerInformation(containerId);
     }
 
-    @GetMapping(path = "/workers/stats/{containerId}")
+    @GetMapping(path = "/stats/{containerId}")
     public ResponseEntity<Object> getContainerStatistics(@PathVariable String containerId) {
         try {
             Statistics statistics = this.workerService.getContainerStatistics(containerId);

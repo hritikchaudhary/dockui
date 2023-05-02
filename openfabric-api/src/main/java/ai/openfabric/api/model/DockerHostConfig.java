@@ -6,6 +6,9 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
+/**
+ * @author Hritik Chaudhary
+ */
 @Entity
 public class DockerHostConfig {
 

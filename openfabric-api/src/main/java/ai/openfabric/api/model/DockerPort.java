@@ -7,6 +7,9 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.Objects;
 
+/**
+ * @author Hritik Chaudhary
+ */
 @Entity
 public class DockerPort {
 

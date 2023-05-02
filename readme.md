@@ -10,7 +10,7 @@ Welcome! and thank you for applying!
     - Comments: Updated Worker Entity and added DockerPort, DockerNetworkSettings, DockerNetwork DockerMount, DockerHostConfig Entities and their respective repositories as well even though not all repositories are used.
 🆙 Update the 👷‍♂️ WorkerController to add actions for:
 - [x] 📄 List workers (paginated)
-  - It lists workers from our database and only lists name and containerId of the worker, I have created a DTO to send that as response
+  - It lists workers (paginated) from our database and only lists name and containerId of the worker, I have created a DTO to send that as response
 - [x] ▶️ Start and ⏹️ Stop worker
   - It takes containerId as input and also checks if container is already running or already stopped.
 - [x] 🔍 Get worker information

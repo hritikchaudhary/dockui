@@ -49,6 +49,7 @@ public class WorkerController {
     public ResponseEntity<String> stopContainer(@PathVariable String containerId) {
         return this.workerService.stopContainer(containerId);
     }
+
     @GetMapping(path = "/workers/info/{containerId}")
     public Worker getWorkerInformation(@PathVariable String containerId) {
         return this.workerService.getWorkerInformation(containerId);
@@ -64,9 +65,5 @@ public class WorkerController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
         }
     }
-
-
-
-
 
 }

@@ -3,6 +3,9 @@ package ai.openfabric.api.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * @author Hritik Chaudhary
+ */
 public class WorkerListDTO {
     @Getter
     @Setter

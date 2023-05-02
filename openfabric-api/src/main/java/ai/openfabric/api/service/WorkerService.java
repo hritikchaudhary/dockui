@@ -26,6 +26,9 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Hritik Chaudhary
+ */
 @Service
 public class WorkerService {
 
@@ -63,6 +66,13 @@ public class WorkerService {
         dockerClient = DockerClientImpl.getInstance(config, httpClient);
     }
 
+    /**
+     * Syncs worker information from Docker to the database
+     * For each Docker container, it retrieves the relevant information and updates the corresponding worker in the database.
+     * If a worker with the corresponding image ID does not exist in the database, it creates a new worker object and saves it.
+     *
+     * @return a message indicating the sync was successful
+     */
     public String syncWorkersFromDocker() {
         List<Container> containers = dockerClient.listContainersCmd().withShowAll(true).exec();
         for (Container container : containers) {
@@ -149,11 +159,24 @@ public class WorkerService {
         return "Synced successfully!";
     }
 
+    /**
+     * Retrieves a paginated list of {@link WorkerListDTO} objects from the worker repository.
+     *
+     * @param page the page number to retrieve
+     * @param size the number of items to retrieve per page
+     * @return a {@link Page} of {@link WorkerListDTO} objects representing the requested workers
+     */
     public Page<WorkerListDTO> getWorkersFromDb(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return workerRepository.listAllWorkers(pageable);
     }
 
+    /**
+     * Starts the Docker container with the specified ID.
+     *
+     * @param containerId the ID of the container to stop
+     * @return a {@link ResponseEntity} object containing a string message indicating the result of the operation
+     */
     public ResponseEntity<String> startContainer(String containerId) {
         try {
             if (dockerClient.inspectContainerCmd(containerId).exec().getState().getStatus().equals("running")) {
@@ -168,6 +191,12 @@ public class WorkerService {
 
     }
 
+    /**
+     * Stops the Docker container with the specified ID.
+     *
+     * @param containerId the ID of the container to stop
+     * @return a {@link ResponseEntity} object containing a string message indicating the result of the operation
+     */
     public ResponseEntity<String> stopContainer(String containerId) {
         try {
             if (dockerClient.inspectContainerCmd(containerId).exec().getState().getStatus().equals("exited")) {
@@ -181,10 +210,23 @@ public class WorkerService {
         }
     }
 
-    public Worker getWorkerInformation(String containerId){
+    /**
+     * Retrieves information about a worker from the worker repository using its container ID.
+     *
+     * @param containerId the ID of the container to retrieve information for
+     * @return the {@link Worker} object representing the worker with the specified container ID
+     */
+    public Worker getWorkerInformation(String containerId) {
         return workerRepository.findByContainerId(containerId);
     }
 
+    /**
+     * Returns statistics for a Docker container.
+     *
+     * @param containerId the ID of the container to get statistics for
+     * @return a {@link Statistics} object containing statistics for the container
+     * @throws Exception if an error occurs while getting the statistics
+     */
     public Statistics getContainerStatistics(String containerId) throws Exception {
         InvocationBuilder.AsyncResultCallback<Statistics> callback = new InvocationBuilder.AsyncResultCallback<>();
         dockerClient.statsCmd(containerId).exec(callback);

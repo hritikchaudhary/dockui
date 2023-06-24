@@ -38,4 +38,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: dockui
-        path: build/libs/*.jar
+        path: dockui-api/build/libs/*.jar

@@ -11,6 +11,6 @@ public class IDGenerator extends org.hibernate.id.UUIDGenerator {
         if (obj == null) {
             throw new HibernateException(new NullPointerException());
         }
-        return super.generate(session, obj);
+        return (Serializable) super.generate(session, obj);
     }
 }

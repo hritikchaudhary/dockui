@@ -37,18 +37,6 @@ spring:
   liquibase:
     change-log: classpath:db/liquibase-changelog.xml
 
-## ===============================
-## = ELIDE configurations
-## ===============================
-elide:
-  json-api:
-    path: /api/v1
-    enabled: true
-  graphql:
-    enabled: false
-  swagger:
-    enabled: false
-
 # ===============================
 # = LOG LEVEL
 # ===============================

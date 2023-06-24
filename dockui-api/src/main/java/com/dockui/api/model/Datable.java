@@ -1,10 +1,10 @@
 package com.dockui.api.model;
 
-import io.swagger.annotations.ApiModelProperty;
 
-import javax.persistence.MappedSuperclass;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -12,13 +12,13 @@ import java.util.Date;
 @MappedSuperclass
 public class Datable implements Serializable {
 
-    @ApiModelProperty(hidden = true)
+    @Schema(hidden = true)
     public Date createdAt;
 
-    @ApiModelProperty(hidden = true)
+    @Schema(hidden = true)
     public Date updatedAt;
 
-    @ApiModelProperty(hidden = true)
+    @Schema(hidden = true)
     public Date deletedAt;
 
     @PrePersist

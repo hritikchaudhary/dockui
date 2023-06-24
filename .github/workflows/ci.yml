@@ -39,3 +39,12 @@ jobs:
       with:
         name: dockui
         path: build/libs/*.jar
+
+    - name: Download artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: dockui
+        path: artifacts
+
+    - name: List artifact files
+      run: ls artifacts

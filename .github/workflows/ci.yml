@@ -39,11 +39,3 @@ jobs:
       with:
         name: dockui
         path: build/libs/*.jar
-
-    - name: Generate and display download link
-      run: |
-        artifact_paths=$(echo ${{ steps.archive.outputs.artifact_paths }} | sed 's/ /%20/g')
-        download_url="Download the JAR file: $artifact_paths"
-        echo "::set-output name=url::$download_url"
-        echo "$download_url"
-

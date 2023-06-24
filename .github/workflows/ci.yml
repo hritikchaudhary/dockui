@@ -17,7 +17,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Set up JDK ${{ env.JAVA_VERSION }}
       uses: actions/setup-java@v3
@@ -35,7 +35,7 @@ jobs:
       run: ./gradlew bootJar --no-daemon
 
     - name: Archive artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
-        name: app-jar
+        name: dockui
         path: build/libs/*.jar

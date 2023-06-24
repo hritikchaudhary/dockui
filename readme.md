@@ -2,6 +2,8 @@
 Welcome! and thank you for applying!
 
 ## Submission
+## Please note IMPORTANT INFO: 
+I have tested this on UNIX as windows was not available with me, so I've used Docker Host as 'unix:///var/run/docker.sock' if you test this on windows make sure that docker is listening on default port and add docker host as 'tcp://localhost:2376' in DockerClientConfig for this project this config is located at openfabric-test/openfabric-api/src/main/java/ai/openfabric/api/service/WorkerService.java
 - [x] 🔄 Integrate the 🐳 Docker Java library (https://github.com/docker-java/docker-java/blob/main/docs/getting_started.md) to enable connect and manage 👷‍♀️ workers.
     - Comments: Integrated the latest version 3.3.0
 - [x] ➕ Add the required fields and database migration for the 👷‍♂️ Worker entity to keep all the information associated on available at the container level (like 🔌 ports, 👨‍💼 name, 🟢 status, etc..)

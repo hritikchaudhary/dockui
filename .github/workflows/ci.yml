@@ -26,7 +26,7 @@ jobs:
         java-version: ${{ env.JAVA_VERSION }}
 
     - name: Build with Gradle
-      run: ./gradlew build --no-daemon
+      run: ./gradlew clean build --no-daemon
 
     - name: Test
       run: ./gradlew test --no-daemon
@@ -40,11 +40,10 @@ jobs:
         name: dockui
         path: build/libs/*.jar
 
-    - name: Download artifact
-      uses: actions/download-artifact@v3
-      with:
-        name: dockui
-        path: artifacts
+    - name: Generate and display download link
+      run: |
+        artifact_paths=$(echo ${{ steps.archive.outputs.artifact_paths }} | sed 's/ /%20/g')
+        download_url="Download the JAR file: $artifact_paths"
+        echo "::set-output name=url::$download_url"
+        echo "$download_url"
 
-    - name: List artifact files
-      run: ls artifacts

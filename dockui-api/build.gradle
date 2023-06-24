@@ -60,18 +60,11 @@ springBoot {
 }
 
 bootJar {
-    mainClassName = 'com.dockui.api.Application'
-
-    // Include necessary dependencies in the JAR
+    manifest {
+        attributes 'Main-Class': 'com.dockui.api.Application'
+    }
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
-
-    // Customize the manifest file
-    manifest {
-        attributes(
-                'Implementation-Title': 'Dockui',
-                'Main-Class': mainClassName
-        )
-    }
+    duplicatesStrategy = 'exclude'
 }

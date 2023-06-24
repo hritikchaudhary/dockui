@@ -23,6 +23,7 @@ jobs:
       uses: actions/setup-java@v2
       with:
         java-version: ${{ env.JAVA_VERSION }}
+        distribution: 'corretto'
 
     - name: Build with Gradle
       run: ./gradlew build --no-daemon

@@ -2,11 +2,11 @@ plugins {
     id 'java'
 }
 
-group 'ai.openfabric'
+group 'com.dockui'
 version '1.0-SNAPSHOT'
 
 repositories {
-    maven { url "https://maven.openfabric.ai/releases" }
+    maven { url "https://maven.dockui.com/releases" }
     mavenCentral()
     mavenLocal()
 }

@@ -1,0 +1,13 @@
+# ===============================
+# = Spring configurations
+# ===============================
+spring:
+  name: local
+  # = HTTP requests configurations ##############################
+  servlet:
+    multipart:
+      location: /tmp
+  datasource:
+    url:      jdbc:postgresql://localhost:5432/dockui
+    username: postgres
+    password: postgres
